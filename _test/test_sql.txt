@@ -1,0 +1,24 @@
+delete from data_test.bq_users
+WHERE date in ( '2020-11-02' ) and gcs_file_name in ('gs://warm-actor-291222_cloudbuild/test-data/date=2020-11-02/data-20201101-003011.json.gz');
+
+select * from data_test.bq_users;
+select count(1) from data_test.bq_users;
+select *,_FILE_NAME gs_file_name  from data_test.users;
+
+select 1 from data_test.users
+WHERE date in ( '2020-11-01' ) and _FILE_NAME in ('gs://warm-actor-291222_cloudbuild/test-data/date=2020-11-02/data-20201101-003011.json.gz');
+
+SELECT *, _FILE_NAME as gcs_file_name FROM data_test.users
+    WHERE date in ( '2020-11-02','2020-09-01' ) and _FILE_NAME in ('gs://warm-actor-291222_cloudbuild/test-data/date=2020-11-02/data-20201101-003011.json.gz','gs://warm-actor-291222_cloudbuild/test-data/date=2020-09-01/data-20200901-000001.json.gz');
+    
+INSERT INTO data_test.bq_users
+    SELECT *, _FILE_NAME as gcs_file_name FROM data_test.users
+    WHERE date in ( '2020-11-02','2020-09-01' ) and _FILE_NAME in ('gs://warm-actor-291222_cloudbuild/test-data/date=2020-11-02/data-20201101-003011.json.gz','gs://warm-actor-291222_cloudbuild/test-data/date=2020-09-01/data-20200901-000001.json.gz');
+
+INSERT INTO data_test.bq_users
+(title, age, rate, name, id, date, gcs_file_name)
+VALUES("Janitor", 31, 3.3, "Kufu Panda", 222, Date('2020-09-01'), 'gs://warm-actor-291222_cloudbuild/test-data/date=2020-09-01/data-20200901-000001.json.gz')
+
+
+bq update --time_partitioning_field=date \
+  --time_partitioning_expiration 6592000 warm-actor-291222:data_test.bq_users
